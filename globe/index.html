@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <title>AdRequest Globe</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+      html {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000000 url(./loading.gif) center center no-repeat;
+        color: #ffffff;
+        font-family: sans-serif;
+        font-size: 13px;
+        line-height: 20px;
+        height: 100%;
+      }
+
+      #info {
+
+        font-size: 11px;
+        position: absolute;
+        bottom: 5px;
+        background-color: rgba(0,0,0,0.8);
+        border-radius: 3px;
+        right: 10px;
+        padding: 10px;
+
+      }
+
+      #currentInfo {
+        width: 270px;
+        position: absolute;
+        left: 20px;
+        top: 63px;
+
+        background-color: rgba(0,0,0,0.2);
+
+        border-top: 1px solid rgba(255,255,255,0.4);
+        padding: 10px;
+      }
+
+      a {
+        color: #aaa;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .bull {
+        padding: 0 5px;
+        color: #555;
+      }
+
+      #title {
+        position: absolute;
+        top: 20px;
+        width: 270px;
+        left: 20px;
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 3px;
+        font: 20px Georgia;
+        padding: 10px;
+      }
+
+
+
+    </style>
+  </head>
+  <body>
+
+  <div id="container"></div>
+
+  <div id="title">
+    AdRequest Locations
+  </div>
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+  <script type="text/javascript" src="./Detector.js"></script>
+  <script type="text/javascript" src="./three.min.js"></script>
+  <script type="text/javascript" src="./Tween.js"></script>
+  <script type="text/javascript" src="./globe.js"></script>
+  <script type="text/javascript">
+    var socket = io('http://localhost:8080');
+    if(!Detector.webgl){
+      Detector.addGetWebGLMessage();
+    } else {
+        var container = document.getElementById('container');
+        //var globe = new DAT.Globe(container);
+        var globe = DAT.Globe(container, function(label) {
+        return new THREE.Color([
+            0xd9d9d9, 0xb6b4b5, 0x9966cc, 0x15adff, 0x3e66a3,
+            0x216288, 0xff7e7e, 0xff1f13, 0xc0120b, 0x5a1301, 0xffcc02,
+            0xedb113, 0x9fce66, 0x0c9a39,
+            0xfe9872, 0x7f3f98, 0xf26522, 0x2bb673, 0xd7df23,
+            0xe6b23a, 0x7ed3f7][label]);
+        });
+
+        console.log(globe);
+        var xhr;
+      
+        socket.on("globe_data", function(globe_data) {
+            var data = JSON.parse(globe_data);
+            window.data = data;
+            globe.clearData();
+            globe.addData(data, {format: 'legend'});
+            globe.createPoints();
+            globe.animate();
+            document.body.style.backgroundImage = 'none'; // remove loading
+        }
+    };
+
+  </script>
+
+  </body>
+
+</html>
